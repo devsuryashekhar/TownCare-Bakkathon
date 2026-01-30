@@ -1,0 +1,26 @@
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 40px;
+  }
+  
+  .nav-actions {
+    display: flex;
+    gap: 15px;
+  }
+  
+  .nav-login {
+    text-decoration: none;
+    color: #333;
+    font-weight: 500;
+  }
+  
+  .nav-cta {
+    text-decoration: none;
+    padding: 8px 18px;
+    background: #4f46e5;
+    color: white;
+    border-radius: 8px;
+    font-weight: 600;
+  }

@@ -2,6 +2,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import serviceRoutes from './routes/services.js';
 import bookingRoutes from './routes/bookings.js';
+import authRoutes from "./routes/authRoutes.js";
 import cors from 'cors';
 import dotenv from 'dotenv';
 
@@ -18,18 +19,21 @@ app.use(express.json());
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/towncare';
 
 mongoose.connect(MONGODB_URI)
-    .then(() => console.log('Connected to MongoDB'))
-    .catch((err) => console.error('MongoDB connection error:', err));
+  .then(() => console.log('Connected to MongoDB'))
+  .catch((err) => console.error('MongoDB connection error:', err));
 
 // Routes
 app.get('/', (req, res) => {
-    res.send('TownCare API is running');
+  res.send('TownCare API is running');
 });
+
+// 🔥 THIS LINE WAS MISSING
+app.use('/api/auth', authRoutes);
 
 app.use('/api/services', serviceRoutes);
 app.use('/api/bookings', bookingRoutes);
 
 // Start Server
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
