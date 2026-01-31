@@ -5,6 +5,9 @@ const userSchema = new mongoose.Schema({
   email: { type: String, unique: true, sparse: true },
   password: String,
   phone: { type: String, unique: true, sparse: true },
+  address: { type: String, default: "" },
+  profilePicture: { type: String, default: "" },
+  bookings: [{ type: mongoose.Schema.Types.ObjectId, ref: "Booking" }],
   googleId: String,
   createdAt: { type: Date, default: Date.now },
 });

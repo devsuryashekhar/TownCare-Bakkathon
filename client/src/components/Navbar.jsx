@@ -13,7 +13,7 @@ const Navbar = () => {
   const navLinks = [
     { name: "Home", path: "/" },
     { name: "Services", path: "/services" },
-    { name: "Providers", path: "/providers" },
+    { name: "Providers", path: "/provider/login" }, // Updated per user request
     { name: "Dashboard", path: "/dashboard" },
   ];
 
@@ -149,7 +149,7 @@ const Navbar = () => {
         </div>
       </Transition>
     </nav>
-    
+
   );
 };
 

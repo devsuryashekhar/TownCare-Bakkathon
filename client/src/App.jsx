@@ -7,7 +7,10 @@ import Services from "./pages/Services";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import PhoneAuth from "./pages/PhoneAuth";
-import { Dashboard, Booking, ProviderProfile } from "./pages/Placeholders";
+import ProviderAuth from "./pages/ProviderAuth";
+import ProviderDashboard from "./pages/ProviderDashboard";
+import Dashboard from "./pages/Dashboard";
+import { Booking, ProviderProfile } from "./pages/Placeholders";
 
 function App() {
   return (
@@ -24,6 +27,10 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/phone-auth" element={<PhoneAuth />} />
+
+          {/* PROVIDER */}
+          <Route path="/provider/login" element={<ProviderAuth />} />
+          <Route path="/provider/dashboard" element={<ProviderDashboard />} />
         </Routes>
       </Layout>
     </ThemeProvider>

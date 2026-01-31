@@ -4,10 +4,25 @@ import Provider from '../models/Provider.js';
 
 const router = express.Router();
 
-// GET all services
+// GET all services with Search and Filter
 router.get('/', async (req, res) => {
     try {
-        const services = await Service.find().populate('provider');
+        const { search, category } = req.query;
+        let query = {};
+
+        if (search) {
+            query.$or = [
+                { title: { $regex: search, $options: 'i' } },
+                { description: { $regex: search, $options: 'i' } },
+                { category: { $regex: search, $options: 'i' } } // Also search category by keyword
+            ];
+        }
+
+        if (category && category !== 'All') {
+            query.category = category;
+        }
+
+        const services = await Service.find(query).populate('providerId');
         res.json(services);
     } catch (err) {
         res.status(500).json({ message: err.message });
@@ -17,7 +32,7 @@ router.get('/', async (req, res) => {
 // GET service by ID
 router.get('/:id', async (req, res) => {
     try {
-        const service = await Service.findById(req.params.id).populate('provider');
+        const service = await Service.findById(req.params.id).populate('providerId');
         if (!service) return res.status(404).json({ message: 'Service not found' });
         res.json(service);
     } catch (err) {

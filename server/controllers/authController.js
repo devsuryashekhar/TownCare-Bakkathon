@@ -1,34 +1,71 @@
 import jwt from "jsonwebtoken";
 
-const users = [];
+import User from "../models/User.js";
+import bcrypt from "bcryptjs";
+
 const otpStore = {}; // { phone: "123456" }
 
 // SIGNUP
-export const signup = (req, res) => {
-  const { name, email, password } = req.body;
+export const signup = async (req, res) => {
+  const { name, email, password, phone, address } = req.body;
 
-  if (users.find((u) => u.email === email)) {
-    return res.status(400).json({ message: "User already exists" });
+  try {
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: "User already exists" });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 12);
+
+    const newUser = new User({
+      name,
+      email,
+      password: hashedPassword,
+      phone,
+      address,
+    });
+
+    await newUser.save();
+
+    // Create token
+    const token = jwt.sign(
+      { email: newUser.email, id: newUser._id },
+      process.env.JWT_SECRET || "SECRET",
+      { expiresIn: "1h" }
+    );
+
+    res.status(201).json({ result: newUser, token });
+  } catch (error) {
+    res.status(500).json({ message: "Something went wrong" });
+    console.log(error);
   }
-
-  users.push({ name, email, password });
-  res.json({ success: true });
 };
 
 // LOGIN
-export const login = (req, res) => {
+export const login = async (req, res) => {
   const { email, password } = req.body;
 
-  const user = users.find(
-    (u) => u.email === email && u.password === password
-  );
+  try {
+    const existingUser = await User.findOne({ email });
+    if (!existingUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
-  if (!user) {
-    return res.status(401).json({ message: "Invalid credentials" });
+    const isPasswordCorrect = await bcrypt.compare(password, existingUser.password);
+    if (!isPasswordCorrect) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
+
+    const token = jwt.sign(
+      { email: existingUser.email, id: existingUser._id },
+      process.env.JWT_SECRET || "SECRET",
+      { expiresIn: "1h" }
+    );
+
+    res.status(200).json({ result: existingUser, token });
+  } catch (error) {
+    res.status(500).json({ message: "Something went wrong" });
   }
-
-  const token = jwt.sign({ email }, "SECRET", { expiresIn: "1h" });
-  res.json({ token });
 };
 
 // SEND OTP
