@@ -1,0 +1,7 @@
+.sidebar-avatar {
+    box-shadow: 0 0 0 3px rgba(99,102,241,0.2);
+  }
+  
+  .sidebar-card {
+    backdrop-filter: blur(8px);
+  }
