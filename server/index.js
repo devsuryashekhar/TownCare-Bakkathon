@@ -3,6 +3,8 @@ import mongoose from 'mongoose';
 import serviceRoutes from './routes/services.js';
 import bookingRoutes from './routes/bookings.js';
 import authRoutes from "./routes/authRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
+import providerRoutes from "./routes/providerRoutes.js";
 import cors from 'cors';
 import dotenv from 'dotenv';
 
@@ -27,8 +29,9 @@ app.get('/', (req, res) => {
   res.send('TownCare API is running');
 });
 
-// 🔥 THIS LINE WAS MISSING
 app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/providers', providerRoutes);
 
 app.use('/api/services', serviceRoutes);
 app.use('/api/bookings', bookingRoutes);
