@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import { SNSClient, PublishCommand } from "@aws-sdk/client-sns";
 
 import User from "../models/User.js";
 import bcrypt from "bcryptjs";
@@ -69,7 +70,7 @@ export const login = async (req, res) => {
 };
 
 // SEND OTP
-export const sendOtp = (req, res) => {
+export const sendOtp = async (req, res) => {
   const { phone } = req.body;
 
   if (!phone) {
@@ -79,8 +80,38 @@ export const sendOtp = (req, res) => {
   const otp = Math.floor(100000 + Math.random() * 900000).toString();
   otpStore[phone] = otp;
 
-  // DEV ONLY
-  res.json({ otp });
+  const awsRegion = process.env.AWS_REGION || "ap-south-1";
+  const smsEnabled = process.env.AWS_SNS_ENABLED !== "false";
+
+  if (smsEnabled) {
+    try {
+      const snsClient = new SNSClient({ region: awsRegion });
+      const normalizedPhone = phone.startsWith("+")
+        ? phone
+        : phone.length === 10
+          ? `+91${phone}`
+          : `+${phone}`;
+      const command = new PublishCommand({
+        PhoneNumber: normalizedPhone,
+        Message: `Your TownCare verification code is ${otp}.`,
+      });
+      await snsClient.send(command);
+      return res.json({ success: true, message: "OTP sent via SMS." });
+    } catch (error) {
+      console.error("AWS SNS error:", error);
+    }
+  }
+
+  const responsePayload = {
+    success: true,
+    message: "OTP generated. SMS provider not configured.",
+  };
+
+  if (process.env.RETURN_DEV_OTP === "true") {
+    responsePayload.otp = otp;
+  }
+
+  res.json(responsePayload);
 };
 
 // VERIFY OTP

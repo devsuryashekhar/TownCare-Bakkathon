@@ -10,7 +10,11 @@ import PhoneAuth from "./pages/PhoneAuth";
 import ProviderAuth from "./pages/ProviderAuth";
 import ProviderDashboard from "./pages/ProviderDashboard";
 import Dashboard from "./pages/Dashboard";
-import { Booking, ProviderProfile } from "./pages/Placeholders";
+import Booking from "./pages/Booking";
+import Checkout from "./pages/Checkout";
+import Payment from "./pages/Payment";
+import Map from "./pages/Map";
+import { ProviderProfile } from "./pages/Placeholders";
 
 function App() {
   return (
@@ -22,6 +26,9 @@ function App() {
           <Route path="/provider/:id" element={<ProviderProfile />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/book/:serviceId" element={<Booking />} />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/payment" element={<Payment />} />
+          <Route path="/map" element={<Map />} />
 
           {/* AUTH */}
           <Route path="/login" element={<Login />} />

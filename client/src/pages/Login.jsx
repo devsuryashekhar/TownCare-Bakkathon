@@ -60,12 +60,24 @@ export default function Login() {
 
   /* ---------------- OTP ---------------- */
   const sendOtp = async () => {
-    const res = await axios.post(
-      "http://localhost:5000/api/auth/send-otp",
-      { phone }
-    );
-    setOtpSent(true);
-    Swal.fire("OTP Sent", `OTP (dev): ${res.data.otp}`, "info");
+    try {
+      const res = await axios.post(
+        "http://localhost:5000/api/auth/send-otp",
+        { phone }
+      );
+      setOtpSent(true);
+      Swal.fire(
+        "OTP Sent",
+        res.data.message || "Check your phone for the OTP.",
+        "success"
+      );
+    } catch (error) {
+      Swal.fire(
+        "Error",
+        error.response?.data?.message || "Failed to send OTP",
+        "error"
+      );
+    }
   };
 
   const verifyOtp = async () => {
