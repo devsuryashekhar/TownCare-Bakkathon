@@ -10,8 +10,8 @@ export default function PhoneAuth() {
 
   const sendOtp = async () => {
     try {
-      const res = await api.post("/api/auth/otp", { phone });
-      alert(`OTP (demo): ${res.data.demoOtp}`);
+      const res = await api.post("/api/auth/send-otp", { phone });
+      alert(res.data.message || "OTP sent to your phone.");
     } catch (err) {
       alert("Failed to send OTP");
     }
@@ -19,8 +19,11 @@ export default function PhoneAuth() {
 
   const verifyOtp = async () => {
     try {
-      const res = await api.post("/api/auth/otp", { phone, otp });
-      localStorage.setItem("token", res.data.token);
+      await api.post("/api/auth/verify-otp", { phone, otp });
+      localStorage.setItem(
+        "user",
+        JSON.stringify({ phone, provider: "otp" })
+      );
 
       // ✅ CLEAR INPUTS
       setPhone("");

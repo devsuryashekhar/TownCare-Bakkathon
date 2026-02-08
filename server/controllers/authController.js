@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import fetch from "node-fetch";
 
 import User from "../models/User.js";
 import bcrypt from "bcryptjs";
@@ -69,7 +70,7 @@ export const login = async (req, res) => {
 };
 
 // SEND OTP
-export const sendOtp = (req, res) => {
+export const sendOtp = async (req, res) => {
   const { phone } = req.body;
 
   if (!phone) {
@@ -79,8 +80,42 @@ export const sendOtp = (req, res) => {
   const otp = Math.floor(100000 + Math.random() * 900000).toString();
   otpStore[phone] = otp;
 
-  // DEV ONLY
-  res.json({ otp });
+  const textbeltKey = process.env.TEXTBELT_API_KEY || "textbelt";
+  const textbeltEnabled = process.env.TEXTBELT_ENABLED !== "false";
+
+  if (textbeltEnabled) {
+    try {
+      const smsResponse = await fetch("https://textbelt.com/text", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          phone,
+          message: `Your TownCare verification code is ${otp}.`,
+          key: textbeltKey,
+        }),
+      });
+
+      const smsResult = await smsResponse.json();
+      if (smsResult.success) {
+        return res.json({ success: true, message: "OTP sent via SMS." });
+      }
+
+      console.warn("SMS delivery failed:", smsResult);
+    } catch (error) {
+      console.error("SMS provider error:", error);
+    }
+  }
+
+  const responsePayload = {
+    success: true,
+    message: "OTP generated. SMS provider not configured.",
+  };
+
+  if (process.env.RETURN_DEV_OTP === "true") {
+    responsePayload.otp = otp;
+  }
+
+  res.json(responsePayload);
 };
 
 // VERIFY OTP

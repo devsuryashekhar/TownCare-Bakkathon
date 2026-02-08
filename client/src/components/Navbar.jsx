@@ -13,8 +13,10 @@ const Navbar = () => {
   const navLinks = [
     { name: "Home", path: "/" },
     { name: "Services", path: "/services" },
+    { name: "Map", path: "/map" },
     { name: "Providers", path: "/provider/login" }, // Updated per user request
     { name: "Dashboard", path: "/dashboard" },
+    { name: "Checkout", path: "/checkout" },
   ];
 
   return (
